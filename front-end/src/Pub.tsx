@@ -35,7 +35,7 @@ function Map({ showModal }: MapInterface) {
 }
 
 export default function Pub() {
-  const { isLoaded } = useLoadScript({
+  const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY ?? "",
   });
 
@@ -70,6 +70,7 @@ export default function Pub() {
           <p>Some contents...</p>
         </Modal>
         {isLoaded ? <Map showModal={showModal} /> : <div>Loading...</div>}
+        {loadError && <div>Map cannot be loaded right now, sorry.</div>}
       </Content>
       <Footer className="Footer">
         <div style={{ display: "flex", justifyContent: "center" }}>
