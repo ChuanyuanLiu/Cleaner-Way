@@ -11,7 +11,7 @@ import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB3Z2w1kTnntV9Irug14o2cQms7bmyhf40",
+  apiKey: process.env.REACT_APP_FIREBASE_KEY,
   authDomain: "clearway-db4d4.firebaseapp.com",
   projectId: "clearway-db4d4",
   storageBucket: "clearway-db4d4.appspot.com",
