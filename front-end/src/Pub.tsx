@@ -1,21 +1,25 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Layout } from 'antd';
-import { Typography } from 'antd';
+import { Typography, Modal } from 'antd';
 import { CameraOutlined, SettingOutlined } from '@ant-design/icons'
-import { GoogleMap, useLoadScript, Marker as MarkerImpl, OverlayView } from "@react-google-maps/api"
+import { GoogleMap, useLoadScript, Marker as MarkerImpl } from "@react-google-maps/api"
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
 
 const defaultPos = { lat: -37.797624159993, lng: 144.95950740721196 }
 
-function Map() {
+interface MapInterface {
+  showModal: () => void;
+}
+
+function Map({showModal} : MapInterface) {
     const [myPos, setMyPos] = useState<google.maps.LatLngLiteral>(defaultPos)
     const [center, setCenter] = useState<google.maps.LatLngLiteral>(defaultPos)
     const Person = () => (
-        <MarkerImpl position={myPos} icon="http://localhost:3000/person.png" />
+        <MarkerImpl position={myPos} icon="http://localhost:3000/person.png" onClick={showModal}/>
     );
     const Bin = () => (
-        <MarkerImpl position={center} icon="http://localhost:3000/bin.png" />
+        <MarkerImpl position={center} icon="http://localhost:3000/bin.png" onClick={showModal}/>
     );
     useEffect(() => {
         navigator.geolocation.watchPosition(
@@ -42,22 +46,54 @@ function Map() {
 }
 
 export default function Pub() {
-    const { isLoaded, loadError } = useLoadScript({ googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY ?? "" })
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY ?? "",
+  });
 
-    return <Layout style={{ height: "100vh" }}>
-        <Header className="Header">
-            <Title> Cleaner Way </Title>
-        </Header>
-        <Content>
-            {isLoaded ? <Map /> : <div>Loading...</div>}
-            {loadError && <div>Map cannot be loaded right now, sorry.</div>}
-        </Content>
-        <Footer className="Footer">
-            <div style={{ display: "flex", justifyContent: "center" }}>
-                <Button> 💎 </Button>
-                <Button> <CameraOutlined /> </Button>
-                <Button> <SettingOutlined /> </Button>
-            </div>
-        </Footer>
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  return (
+    <Layout style={{ height: "100vh" }}>
+      <Header className="Header">
+        <Title> Waste Collection </Title>
+      </Header>
+      <Content>
+        <Modal
+          title="Basic Modal"
+          visible={isModalVisible}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Modal>
+        {isLoaded ? <Map showModal={showModal} /> : <div>Loading...</div>}
+        {loadError && <div>Map cannot be loaded right now, sorry.</div>}
+      </Content>
+      <Footer className="Footer">
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Button> 💎 </Button>
+          <Button>
+            <CameraOutlined />
+          </Button>
+          <Button>
+            <SettingOutlined />
+          </Button>
+        </div>
+      </Footer>
     </Layout>
+  );
 }
